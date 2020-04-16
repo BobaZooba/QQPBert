@@ -48,7 +48,7 @@ class QQPLightning(pl.LightningModule):
             self.correct_predictions = self.correct_predictions[-self.config.last_n_acc:]
             self.all_predictions = self.all_predictions[-self.config.last_n_acc:]
 
-            accuracy = sum(self.correct_predictions) / self.all_predictions
+            accuracy = sum(self.correct_predictions) / sum(self.all_predictions)
 
             log['accuracy'] = accuracy
 
