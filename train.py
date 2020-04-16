@@ -11,7 +11,7 @@ from pytorch_lightning.loggers import CometLogger, TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 
-if __name__ == '__main__':
+def train():
 
     logger = logging.getLogger(__file__)
 
@@ -91,3 +91,7 @@ if __name__ == '__main__':
 
     logger.info('Start training')
     trainer.fit(model)
+
+
+if __name__ == "__main__":
+    train()
