@@ -13,7 +13,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 if __name__ == '__main__':
     parser = ArgumentParser()
 
-    parser.add_argument('--data_dir', type=str, default=os.path.join(os.getcwd(), '/data/'))
+    parser.add_argument('--data_dir', type=str, default='./data/')
     parser.add_argument('--dataset_url', type=str, default='http://qim.fs.quoracdn.net/quora_duplicate_questions.tsv')
     parser.add_argument('--download_if_not_exist', type=bool, default=True)
     parser.add_argument('--checkpoint_path', type=str, default='./checkpoint/')
