@@ -63,10 +63,11 @@ def train():
             api_key=args.comet_api_key,
             project_name=args.project_name
         )
+        pl_logger.experiment.log_parameters(args.__dict__)
         logger.info('Use comet logger')
     else:
-        logger.info('Use tensorboard logger')
         pl_logger = TensorBoardLogger(save_dir=os.getcwd(), name=args.project_name)
+        logger.info('Use tensorboard logger')
 
     checkpoint_callback = ModelCheckpoint(
         filepath=os.path.join(os.getcwd(), args.checkpoint_path),

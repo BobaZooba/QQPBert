@@ -50,7 +50,7 @@ class QQPLightning(pl.LightningModule):
 
             accuracy = sum(self.correct_predictions) / sum(self.all_predictions)
 
-            log['accuracy'] = accuracy
+            log['train_accuracy'] = accuracy
 
         return {'loss': loss, 'log': log}
 
@@ -99,7 +99,7 @@ class QQPLightning(pl.LightningModule):
     def get_loader(self, data_path):
         dataset = PairedData(data_path=data_path,
                              tokenizer=self.tokenizer,
-                             batch_size=self.config.batch_size)
+                             batch_size=self.config.batch_size * len(self.config.gpu))
 
         loader = DataLoader(dataset=dataset,
                             collate_fn=self.collate)
