@@ -1,5 +1,6 @@
 import os
 import torch
+import logging
 from argparse import ArgumentParser
 
 from src.download import get_dataset
@@ -11,6 +12,9 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 
 
 if __name__ == '__main__':
+
+    logger = logging.getLogger(__file__)
+
     parser = ArgumentParser()
 
     parser.add_argument('--data_dir', type=str, default='./data/')
@@ -39,34 +43,44 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    logging.basicConfig(level=logging.INFO)
+
     if not os.path.isdir(args.data_dir):
         os.mkdir(args.data_dir)
 
     for file in ['train.tsv', 'validation.tsv', 'test.tsv']:
         if not os.path.isfile(os.path.join(args.data_dir, file)) and args.download_if_not_exist:
+            logger.info('Start downloading')
             get_dataset(url=args.dataset_url, data_dir=args.data_dir)
             break
 
+    logger.info('Model init')
     model = QQPLightning(hparams=args)
+    logger.info('Model has %s parameters', sum(p.numel() for p in model.parameters() if p.requires_grad))
 
     if args.comet_api_key:
-        logger = CometLogger(
+        pl_logger = CometLogger(
             api_key=args.comet_api_key,
             project_name=args.project_name
         )
+        logger.info('Use comet logger')
     else:
-        logger = TensorBoardLogger(save_dir=os.getcwd(), name=args.project_name)
+        logger.info('Use tensorboard logger')
+        pl_logger = TensorBoardLogger(save_dir=os.getcwd(), name=args.project_name)
 
     checkpoint_callback = ModelCheckpoint(
         filepath=os.path.join(os.getcwd(), args.checkpoint_path),
-        save_top_k=2,
+        save_top_k=1,
         verbose=True,
         monitor='val_loss',
         mode='min',
         prefix=''
     )
 
-    trainer = pl.Trainer(logger=logger,
+    logger.info('Trainer init')
+
+    trainer = pl.Trainer(logger=pl_logger,
+                         max_epochs=args.n_epochs,
                          use_amp=args.use_amp,
                          precision=args.precision,
                          gradient_clip=args.max_norm,
@@ -75,4 +89,5 @@ if __name__ == '__main__':
                          num_sanity_val_steps=0,
                          checkpoint_callback=checkpoint_callback)
 
+    logger.info('Start training')
     trainer.fit(model)

@@ -3,6 +3,7 @@
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
 
+playground.py
 ./data
 
 .ipynb_checkpoints
