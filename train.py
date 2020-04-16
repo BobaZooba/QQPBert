@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--last_n_acc', type=int, default=1000)
 
     parser.add_argument('--model_name', type=str, default='bert-base-cased')
-    parser.add_argument('--comet_api_key', type=str, default='Ul3oe90oSUc9wRnxdv2YLzVYQ')
+    parser.add_argument('--comet_api_key', type=str, default='')
 
     parser.add_argument('--use_amp', type=bool, default=True)
     parser.add_argument('--precision', type=int, default=16)
