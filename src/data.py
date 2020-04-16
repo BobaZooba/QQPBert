@@ -44,14 +44,12 @@ class PairedData(Dataset):
 
         progress_bar = tqdm(desc='Loading', disable=not self.verbose)
 
-        n = 0
-
         with open(self.data_path) as file_object:
             while True:
 
                 line = file_object.readline().strip()
 
-                if not line or n >= 10000:
+                if not line:
                     break
 
                 text1, text2, target = line.split(self.sep)
@@ -59,8 +57,6 @@ class PairedData(Dataset):
                 tokenizer_result['target'] = int(target)
                 data.append(tokenizer_result)
                 progress_bar.update()
-
-                n += 1
 
         progress_bar.close()
 
