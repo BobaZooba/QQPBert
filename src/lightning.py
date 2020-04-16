@@ -64,6 +64,7 @@ class QQPLightning(pl.LightningModule):
 
         prediction_prob = torch.exp(torch.log_softmax(prediction.detach().cpu(), 1))[:, 1]
 
+        # TODO correct multi-gpu
         return {'val_loss': loss, 'prediction': prediction_prob, 'targets': target.detach().cpu()}
 
     def validation_epoch_end(self, outputs):
