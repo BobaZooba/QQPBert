@@ -25,9 +25,9 @@ def train():
     parser.add_argument('--project_name', type=str, default='QQPBert')
     parser.add_argument('--gpu', nargs='*', type=int, default=[0] if torch.cuda.is_available() else None)
 
-    parser.add_argument('--batch_size', type=int, default=8)
-    parser.add_argument('--lr', type=float, default=2e-5)
-    parser.add_argument('--max_norm', type=float, default=3.)
+    parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--max_norm', type=float, default=2.)
     parser.add_argument('--weight_decay', type=float, default=0.0)
     parser.add_argument('--n_epochs', type=int, default=5)
 
