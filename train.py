@@ -34,6 +34,7 @@ def train():
     parser.add_argument('--last_n_acc', type=int, default=1000)
 
     parser.add_argument('--model_name', type=str, default='bert-base-cased')
+    parser.add_argument('--from_nsp', type=bool, default=False)
     parser.add_argument('--comet_api_key', type=str, default='')
 
     parser.add_argument('--use_amp', type=bool, default=True)

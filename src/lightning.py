@@ -14,7 +14,10 @@ class QQPLightning(pl.LightningModule):
         self.config = hparams
 
         self.tokenizer = Tokenizer(self.config.model_name)
-        self.bert = transformers.BertForSequenceClassification.from_pretrained(self.config.model_name)
+        if self.config.from_nsp:
+            self.bert = transformers.BertForNextSentencePrediction.from_pretrained(self.config.model_name)
+        else:
+            self.bert = transformers.BertForSequenceClassification.from_pretrained(self.config.model_name)
         self.criterion = torch.nn.CrossEntropyLoss()
 
         self.correct_predictions = list()
