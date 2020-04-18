@@ -11,13 +11,13 @@ class QQPLightning(pl.LightningModule):
     def __init__(self, hparams):
         super().__init__()
 
-        self.config = hparams
+        self.hparams = hparams
 
-        self.tokenizer = Tokenizer(self.config.model_name)
-        if self.config.from_nsp:
-            self.bert = transformers.BertForNextSentencePrediction.from_pretrained(self.config.model_name)
+        self.tokenizer = Tokenizer(self.hparams.model_name)
+        if self.hparams.from_nsp:
+            self.bert = transformers.BertForNextSentencePrediction.from_pretrained(self.hparams.model_name)
         else:
-            self.bert = transformers.BertForSequenceClassification.from_pretrained(self.config.model_name)
+            self.bert = transformers.BertForSequenceClassification.from_pretrained(self.hparams.model_name)
         self.criterion = torch.nn.CrossEntropyLoss()
 
         self.correct_predictions = list()
@@ -46,10 +46,10 @@ class QQPLightning(pl.LightningModule):
         self.correct_predictions.append(correct_predictions.item())
         self.all_predictions.append(target.size(0))
 
-        if self.global_step >= self.config.last_n_acc:
+        if self.global_step >= self.hparams.last_n_acc:
 
-            self.correct_predictions = self.correct_predictions[-self.config.last_n_acc:]
-            self.all_predictions = self.all_predictions[-self.config.last_n_acc:]
+            self.correct_predictions = self.correct_predictions[-self.hparams.last_n_acc:]
+            self.all_predictions = self.all_predictions[-self.hparams.last_n_acc:]
 
             accuracy = sum(self.correct_predictions) / sum(self.all_predictions)
 
@@ -91,8 +91,8 @@ class QQPLightning(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(params=self.bert.parameters(),
-                                      lr=self.config.lr,
-                                      weight_decay=self.config.weight_decay)
+                                      lr=self.hparams.lr,
+                                      weight_decay=self.hparams.weight_decay)
 
         return optimizer
 
@@ -103,18 +103,19 @@ class QQPLightning(pl.LightningModule):
     def get_loader(self, data_path):
         dataset = PairedData(data_path=data_path,
                              tokenizer=self.tokenizer,
-                             batch_size=self.config.batch_size * len(self.config.gpu))
+                             batch_size=self.hparams.batch_size * len(self.hparams.gpu))
 
         loader = DataLoader(dataset=dataset,
-                            collate_fn=self.collate)
+                            collate_fn=self.collate,
+                            shuffle=True)
 
         return loader
 
     def train_dataloader(self):
-        return self.get_loader(os.path.join(self.config.data_dir, 'train.tsv'))
+        return self.get_loader(os.path.join(self.hparams.data_dir, 'train.tsv'))
 
     def val_dataloader(self):
-        return self.get_loader(os.path.join(self.config.data_dir, 'validation.tsv'))
+        return self.get_loader(os.path.join(self.hparams.data_dir, 'validation.tsv'))
 
     def test_dataloader(self):
-        return self.get_loader(os.path.join(self.config.data_dir, 'test.tsv'))
+        return self.get_loader(os.path.join(self.hparams.data_dir, 'test.tsv'))
