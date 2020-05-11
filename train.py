@@ -11,6 +11,9 @@ from pytorch_lightning.loggers import CometLogger, TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 
+DATASET_URL = 'http://qim.fs.quoracdn.net/quora_duplicate_questions.tsv'
+
+
 def train():
 
     logger = logging.getLogger(__file__)
@@ -18,7 +21,6 @@ def train():
     parser = ArgumentParser()
 
     parser.add_argument('--data_dir', type=str, default='./data/')
-    parser.add_argument('--dataset_url', type=str, default='http://qim.fs.quoracdn.net/quora_duplicate_questions.tsv')
     parser.add_argument('--download_if_not_exist', type=bool, default=True)
     parser.add_argument('--checkpoint_path', type=str, default='./checkpoint/')
 
@@ -52,7 +54,7 @@ def train():
     for file in ['train.tsv', 'validation.tsv', 'test.tsv']:
         if not os.path.isfile(os.path.join(args.data_dir, file)) and args.download_if_not_exist:
             logger.info('Start downloading')
-            get_dataset(url=args.dataset_url, data_dir=args.data_dir)
+            get_dataset(url=DATASET_URL, data_dir=args.data_dir)
             break
 
     logger.info('Model init')

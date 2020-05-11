@@ -67,7 +67,6 @@ class QQPLightning(pl.LightningModule):
 
         prediction_prob = torch.exp(torch.log_softmax(prediction.detach().cpu(), 1))[:, 1]
 
-        # TODO correct multi-gpu
         return {'val_loss': loss, 'prediction': prediction_prob, 'targets': target.detach().cpu()}
 
     def validation_epoch_end(self, outputs):
@@ -100,22 +99,22 @@ class QQPLightning(pl.LightningModule):
     def collate(batch):
         return batch[0]
 
-    def get_loader(self, data_path):
+    def get_loader(self, data_path, shuffle=True):
         dataset = PairedData(data_path=data_path,
                              tokenizer=self.tokenizer,
                              batch_size=self.hparams.batch_size * len(self.hparams.gpu))
 
         loader = DataLoader(dataset=dataset,
                             collate_fn=self.collate,
-                            shuffle=True)
+                            shuffle=shuffle)
 
         return loader
 
     def train_dataloader(self):
-        return self.get_loader(os.path.join(self.hparams.data_dir, 'train.tsv'))
+        return self.get_loader(os.path.join(self.hparams.data_dir, 'train.tsv'), shuffle=True)
 
     def val_dataloader(self):
-        return self.get_loader(os.path.join(self.hparams.data_dir, 'validation.tsv'))
+        return self.get_loader(os.path.join(self.hparams.data_dir, 'validation.tsv'), shuffle=False)
 
     def test_dataloader(self):
-        return self.get_loader(os.path.join(self.hparams.data_dir, 'test.tsv'))
+        return self.get_loader(os.path.join(self.hparams.data_dir, 'test.tsv'), shuffle=False)
